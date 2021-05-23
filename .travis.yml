@@ -5,8 +5,6 @@ addons:
   postgresql: 9.6
 cache:
   bundler: true
-before_install:
-- gem install bundler
 script:
 - bundle
 - bundle exec rails db:{create,migrate} RAILS_ENV=test
