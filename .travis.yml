@@ -6,6 +6,7 @@ addons:
 script:
 - gem install bundler:2.1.4
 - bundle exec rails db:{create,migrate,seed} RAILS_ENV=test
+- bundle exec rails db:schema:dump 
 - bundle exec rspec
 on:
   repo: austin/rails-engine
