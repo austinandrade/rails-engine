@@ -2,12 +2,13 @@ class Api::V1::MerchantsController < ApplicationController
   MAX_PAGINATION_LIMIT = 20
 
   def index
-    merchant = Merchant.offset(page_number).limit(per_page)
-    render json: MerchantSerializer.new(merchant)
+    merchants = Merchant.offset(page_number).limit(per_page)
+    render json: MerchantSerializer.new(merchants)
   end
 
   def show
-    render json: MerchantSerializer.new(Merchant.find(params[:id]))
+    merchant = Merchant.find(params[:id])
+    render json: MerchantSerializer.new(merchant)
   end
 
   private
