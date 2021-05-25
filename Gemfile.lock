@@ -93,6 +93,8 @@ GEM
     faraday-net_http_persistent (1.1.0)
     faraday_middleware (1.0.0)
       faraday (~> 1.0)
+    fast_jsonapi (1.5)
+      activesupport (>= 4.2)
     ffi (1.15.1)
     gh (0.18.0)
       activesupport (~> 5.0)
@@ -277,6 +279,7 @@ DEPENDENCIES
   coffee-rails (~> 4.2)
   factory_bot_rails
   faker
+  fast_jsonapi
   jbuilder (~> 2.5)
   launchy
   listen (~> 3.3)
