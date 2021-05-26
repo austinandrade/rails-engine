@@ -22,6 +22,9 @@ describe "Merchants API" do
       expect(merchant).to have_key(:id)
       expect(merchant[:id]).to be_an(String)
 
+      expect(merchant).to have_key(:type)
+      expect(merchant[:type]).to be_an(Object)
+
       expect(merchant[:attributes]).to have_key(:name)
       expect(merchant[:attributes][:name]).to be_a(String)
     end
@@ -45,6 +48,9 @@ describe "Merchants API" do
     expect(merchant[:data]).to have_key(:id)
     expect(merchant[:data][:id]).to be_a(String)
     expect(merchant[:data][:id].to_i).to eq(id)
+
+    expect(merchant[:data]).to have_key(:type)
+    expect(merchant[:data][:type]).to be_an(Object)
 
     expect(merchant[:data][:attributes]).to have_key(:name)
     expect(merchant[:data][:attributes][:name]).to be_a(String)
@@ -98,6 +104,9 @@ describe "Merchants API" do
     expect(merchant[:data][:id]).to be_a(String)
     expect(merchant[:data][:id].to_i).to eq(id)
 
+    expect(merchant[:data]).to have_key(:type)
+    expect(merchant[:data][:type]).to be_an(Object)
+
     expect(merchant[:data][:attributes]).to have_key(:name)
     expect(merchant[:data][:attributes][:name]).to be_a(String)
   end
@@ -118,7 +127,7 @@ describe "Merchants API" do
     expect(merchant_response[:data][0][:id]).to be_a(String)
 
     expect(merchant_response[:data][0]).to have_key(:type)
-    expect(merchant_response[:data][0][:type]).to be_a(String)
+    expect(merchant_response[:data][0][:type]).to be_an(Object)
 
     expect(merchant_response[:data][0]).to have_key(:attributes)
     expect(merchant_response[:data][0][:attributes]).to be_an(Hash)
