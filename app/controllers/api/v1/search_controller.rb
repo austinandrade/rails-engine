@@ -11,4 +11,10 @@ class Api::V1::SearchController < ApplicationController
       render json: MerchantSerializer.new(blank_merchant)
     end
   end
+
+  def find_items
+    items = Item.where("name Ilike ?", "%#{params[:name]}%")
+    .order("LOWER(name)")
+    render json: ItemSerializer.new(items)
+  end
 end
