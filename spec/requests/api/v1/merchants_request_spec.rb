@@ -1,6 +1,6 @@
 require 'rails_helper'
 
-describe "Merchants API" do
+describe "merchants requests" do
   it "returns 3 merchant json objects" do
     create_list(:merchant, 3)
 
