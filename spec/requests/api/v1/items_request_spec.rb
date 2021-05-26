@@ -143,21 +143,61 @@ describe "Items API" do
     expect{Item.find(created_item.id)}.to raise_error(ActiveRecord::RecordNotFound)
   end
 
-  it "can update an existing item" do
-    id = create(:item).id
-    previous_name = Item.last.name
-    item_params = { name: "Spider Man" }
-    headers = {"CONTENT_TYPE" => "application/json"}
+  describe 'item update' do
+    it "can update an existing item" do
+      id = create(:item).id
+      previous_name = Item.last.name
+      item_params = { name: "Spider Man" }
+      headers = {"CONTENT_TYPE" => "application/json"}
 
-    put "/api/v1/items/#{id}", headers: headers, params: JSON.generate({item: item_params})
-    item = Item.find_by(id: id)
+      put "/api/v1/items/#{id}", headers: headers, params: JSON.generate({item: item_params})
+      item = Item.find_by(id: id)
 
-    expect(response).to be_successful
-    expect(item.name).to_not eq(previous_name)
-    expect(item.name).to eq("Spider Man")
+      expect(response).to be_successful
+      expect(item.name).to_not eq(previous_name)
+      expect(item.name).to eq("Spider Man")
+    end
+
+    it "attempts to update item with invalid merchant id" do
+      id = create(:item).id
+      previous_name = Item.last.name
+      item_params = { name: "Spider Man", merchant_id: 25 }
+      headers = {"CONTENT_TYPE" => "application/json"}
+
+      put "/api/v1/items/#{id}", headers: headers, params: JSON.generate({item: item_params})
+      item = Item.find_by(id: id)
+
+      expect(response.status).to eq(404)
+      expect(item.name).to eq(previous_name)
+    end
   end
 
-  it "returns an item's merchant" do
-    
+  it "returns a single item's merchant by their id" do
+    merchant_1      = create(:merchant)
+    merchant_2      = create(:merchant)
+    merchant_3      = create(:merchant)
+    merchant_1_item = create(:item, merchant: merchant_1)
+    merchant_2_item = create(:item, merchant: merchant_2)
+    merchant_3_item = create(:item, merchant: merchant_3)
+
+    get "/api/v1/items/#{merchant_2_item.id}/merchant"
+
+    expect(response).to be_successful
+    expect(response.status).to eq(200)
+    expect(response.error?).to eq(false)
+
+    merchant_response = JSON.parse(response.body, symbolize_names: true)
+
+    expect(merchant_response).to have_key(:data)
+    expect(merchant_response[:data]).to be_a(Hash)
+
+    expect(merchant_response[:data]).to have_key(:id)
+    expect(merchant_response[:data][:id]).to be_a(String)
+
+    expect(merchant_response[:data]).to have_key(:attributes)
+    expect(merchant_response[:data][:attributes]).to be_an(Hash)
+
+    expect(merchant_response[:data][:attributes]).to have_key(:name)
+    expect(merchant_response[:data][:attributes][:name]).to be_a(String)
   end
 end
