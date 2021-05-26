@@ -1,6 +1,6 @@
 require 'rails_helper'
 
-describe "Items API" do
+describe "items requests" do
   it "returns all item json objects" do
     merchant              = create(:merchant)
     merchant_2            = create(:merchant)
