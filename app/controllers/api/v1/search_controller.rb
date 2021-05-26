@@ -7,8 +7,8 @@ class Api::V1::SearchController < ApplicationController
     if merchant.present?
       render json: MerchantSerializer.new(merchant)
     else
-      merchant = Merchant.create
-      render json: MerchantSerializer.new(merchant)
+      blank_merchant = Merchant.create
+      render json: MerchantSerializer.new(blank_merchant)
     end
   end
 end
