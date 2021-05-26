@@ -13,7 +13,7 @@ class Api::V1::ItemsController < ApplicationController
 
   def create
     created_item = Item.create!(item_params)
-    render json: ItemSerializer.new(created_item), :status => 201
+    render json: ItemSerializer.new(created_item), status: :created
   end
 
   def update
@@ -21,7 +21,7 @@ class Api::V1::ItemsController < ApplicationController
     if item.update(item_params)
       render json: ItemSerializer.new(item)
     else
-      render :json => {:error =>  'Not Found'}.to_json, :status => 404
+      render json: { error: 'Not Found' }.to_json, status: :not_found
     end
   end
 
