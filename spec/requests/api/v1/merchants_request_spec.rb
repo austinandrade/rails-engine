@@ -275,11 +275,7 @@ describe "merchants requests" do
       invoice.transactions.create!(result: 'success', credit_card_number: '12345', credit_card_expiration_date: '12/7')
       invoice.invoice_items.create!(item: item, quantity: 20, unit_price: 3)
 
-      merchant_id_params = ({
-                      id: merchant.id,
-                    })
-      headers = {"CONTENT_TYPE" => "application/json"}
-      get "/api/v1/revenue/merchants/:id", headers: headers, params: merchant_id_params
+      get "/api/v1/revenue/merchants/#{merchant.id}"
 
       expect(response).to be_successful
       expect(response.status).to eq(200)
@@ -295,8 +291,8 @@ describe "merchants requests" do
       expect(merchant[:data]).to have_key(:type)
       expect(merchant[:data][:type]).to eq("merchant_revenue")
 
-      expect(merchant[:data][:attributes]).to have_key(:name)
-      expect(merchant[:data][:attributes][:name]).to be_a(String)
+      expect(merchant[:data][:attributes]).to have_key(:revenue)
+      expect(merchant[:data][:attributes][:revenue]).to be_a(Float)
     end
   end
 end
