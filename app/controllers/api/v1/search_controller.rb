@@ -1,20 +1,25 @@
 class Api::V1::SearchController < ApplicationController
   def find_merchant
-    merchant =
+    if params[:name] && params[:name].present?
+      merchant =
       Merchant.where('name Ilike ?', "%#{params[:name]}%")
-              .order('LOWER(name)')
-              .first
-    if merchant.present?
+      .order('LOWER(name)')
+      .first
       render json: MerchantSerializer.new(merchant)
     else
       blank_merchant = Merchant.create
-      render json: MerchantSerializer.new(blank_merchant)
+      render json: MerchantSerializer.new(blank_merchant), status: 400
     end
   end
 
   def find_items
-    items = Item.where('name Ilike ?', "%#{params[:name]}%")
-                .order('LOWER(name)')
-    render json: ItemSerializer.new(items)
+    if params[:name] && params[:name].present?
+      items = Item.where('name Ilike ?', "%#{params[:name]}%")
+                  .order('LOWER(name)')
+      render json: ItemSerializer.new(items)
+    else
+      blank_item = Item.create
+      render json: ItemSerializer.new(blank_item), status: 400
+    end
   end
 end
