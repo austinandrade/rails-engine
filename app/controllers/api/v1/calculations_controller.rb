@@ -7,4 +7,9 @@ class Api::V1::CalculationsController < ApplicationController
       render json: { error: 'Please include quantity param' }.to_json, status: 400
     end
   end
+
+  def merchant_total_revenue
+    merchant = Merchant.find(params[:id])
+    render json: MerchantRevenueSerializer.new(merchant)
+  end
 end

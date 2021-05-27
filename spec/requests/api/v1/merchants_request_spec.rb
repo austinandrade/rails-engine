@@ -146,7 +146,7 @@ describe "merchants requests" do
   end
 
   describe 'top n merchants endpoint' do
-    it "returns top 5 merchants by total revenue generated" do
+    it "successfully returns top 5 merchants by total revenue generated" do
       top_5 = 5
 
       merchant_2 = create :merchant
@@ -261,6 +261,42 @@ describe "merchants requests" do
       expect(response.successful?).to eq(false)
       expect(response.status).to eq(400)
       expect(response.server_error?).to eq(false)
+    end
+  end
+
+  describe 'single merchant revenue endpoint' do
+    it "successfully returns a single merchants total revenue" do
+      merchant = create :merchant
+      item = create :item, merchant: merchant
+      customer = create :customer
+
+      # generates 60 dollars in revenue for our merchant
+      invoice = customer.invoices.create!(status: 'shipped', merchant: merchant)
+      invoice.transactions.create!(result: 'success', credit_card_number: '12345', credit_card_expiration_date: '12/7')
+      invoice.invoice_items.create!(item: item, quantity: 20, unit_price: 3)
+
+      merchant_id_params = ({
+                      id: merchant.id,
+                    })
+      headers = {"CONTENT_TYPE" => "application/json"}
+      get "/api/v1/revenue/merchants/:id", headers: headers, params: merchant_id_params
+
+      expect(response).to be_successful
+      expect(response.status).to eq(200)
+      expect(response.server_error?).to eq(false)
+
+      merchant = JSON.parse(response.body, symbolize_names: true)
+
+      expect(merchant).to have_key(:data)
+      expect(merchant[:data]).to have_key(:id)
+      expect(merchant[:data][:id]).to be_an(String)
+      expect(merchant[:data][:attributes]).to be_a(Hash)
+
+      expect(merchant[:data]).to have_key(:type)
+      expect(merchant[:data][:type]).to eq("merchant_revenue")
+
+      expect(merchant[:data][:attributes]).to have_key(:name)
+      expect(merchant[:data][:attributes][:name]).to be_a(String)
     end
   end
 end
