@@ -7,6 +7,7 @@ describe "search requests" do
       merchant_2    = create(:merchant, name: 'Albert')
       merchant_3    = create(:merchant, name: 'during')
 
+
       search_params = ({
                       name: 'UrInG',
                       })
@@ -45,8 +46,8 @@ describe "search requests" do
 
       found_merchant = JSON.parse(response.body, symbolize_names: true)
 
-      expect(response).to be_successful
-      expect(response.status).to eq(200)
+      expect(response.successful?).to eq(false)
+      expect(response.status).to eq(400)
       expect(response.error?).to eq(false)
 
       expect(found_merchant).to have_key(:data)
