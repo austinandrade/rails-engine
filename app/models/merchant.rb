@@ -16,6 +16,24 @@ class Merchant < ApplicationRecord
       .limit(limit)
   end
 
+  def self.best_item_selling_merchants(limit)
+    joins(invoices: [:invoice_items, :transactions])
+      .where('transactions.result = ?', 'success')
+      .where('invoices.status = ?', 'shipped')
+      .select('merchants.*, sum(invoice_items.quantity) as total_sold')
+      .group(:id)
+      .order('total_sold desc')
+      .limit(limit)
+  end
+
+  def total_items_sold
+    invoices.where('invoices.status = ?', 'shipped')
+    .joins(:transactions)
+    .where('transactions.result = ?', 'success')
+    .joins(:invoice_items)
+    .sum('invoice_items.quantity')
+  end
+
   def total_revenue
     invoices.where('invoices.status = ?', 'shipped')
     .joins(:transactions)
