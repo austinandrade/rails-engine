@@ -6,24 +6,26 @@ class Merchant < ApplicationRecord
   has_many :items, dependent: :destroy
   has_many :invoice_items, through: :items
 
-  def self.top_merchants_by_revenue(limit)
-    joins(invoices: [:invoice_items, :transactions])
-      .where('transactions.result = ?', 'success')
-      .where('invoices.status = ?', 'shipped')
-      .select('merchants.*, sum(invoice_items.quantity * invoice_items.unit_price) as total_revenue')
-      .group(:id)
-      .order('total_revenue desc')
-      .limit(limit)
-  end
+  class << self
+    def top_merchants_by_revenue(quantity)
+      joins(invoices: [:invoice_items, :transactions])
+        .where('transactions.result = ?', 'success')
+        .where('invoices.status = ?', 'shipped')
+        .select('merchants.*, sum(invoice_items.quantity * invoice_items.unit_price) as total_revenue')
+        .group(:id)
+        .order('total_revenue desc')
+        .limit(quantity)
+    end
 
-  def self.best_item_selling_merchants(limit)
-    joins(invoices: [:invoice_items, :transactions])
-      .where('transactions.result = ?', 'success')
-      .where('invoices.status = ?', 'shipped')
-      .select('merchants.*, sum(invoice_items.quantity) as total_sold')
-      .group(:id)
-      .order('total_sold desc')
-      .limit(limit)
+    def best_item_selling_merchants(quantity)
+      joins(invoices: [:invoice_items, :transactions])
+        .where('transactions.result = ?', 'success')
+        .where('invoices.status = ?', 'shipped')
+        .select('merchants.*, sum(invoice_items.quantity) as total_sold')
+        .group(:id)
+        .order('total_sold desc')
+        .limit(quantity)
+    end
   end
 
   def total_items_sold
