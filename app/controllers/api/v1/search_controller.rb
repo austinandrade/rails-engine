@@ -5,6 +5,7 @@ class Api::V1::SearchController < ApplicationController
       Merchant.where('name Ilike ?', "%#{params[:name]}%")
       .order('LOWER(name)')
       .first
+
       if merchant
         render json: MerchantSerializer.new(merchant)
       else
