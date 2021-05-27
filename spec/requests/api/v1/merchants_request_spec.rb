@@ -295,4 +295,103 @@ describe "merchants requests" do
       expect(merchant[:data][:attributes][:revenue]).to be_a(Float)
     end
   end
+
+  describe 'merchants with most items sold endpoint' do
+    it "successfully returns the top n merchants with the most items sold" do
+      top_3 = 3
+
+      merchant_1 = create :merchant
+      merchant_2 = create :merchant
+      merchant_3 = create :merchant
+      merchant_4 = create :merchant
+
+      customer = create :customer
+
+      item_2a = create :item, merchant: merchant_1
+      item_2b = create :item, merchant: merchant_1
+
+      item_3a = create :item, merchant: merchant_2
+      item_3b = create :item, merchant: merchant_2
+
+      item_4a = create :item, merchant: merchant_3
+      item_4b = create :item, merchant: merchant_3
+
+      item_5a = create :item, merchant: merchant_4
+      item_5b = create :item, merchant: merchant_4
+
+      # 11 items sold for merchant_1
+      invoice_2 = customer.invoices.create!(status: 'shipped', merchant: merchant_1)
+      invoice_2.transactions.create!(result: 'success', credit_card_number: '12345', credit_card_expiration_date: '12/7')
+      invoice_2.invoice_items.create!(item: item_2a, quantity: 1, unit_price: 10)
+      invoice_2.invoice_items.create!(item: item_2b, quantity: 10, unit_price: 1)
+
+      # 250 items sold for merchant_2
+      invoice_3a = customer.invoices.create!(status: 'shipped', merchant: merchant_2)
+      invoice_3b = customer.invoices.create!(status: 'shipped', merchant: merchant_2)
+      invoice_3a.transactions.create!(result: 'success', credit_card_number: '12345', credit_card_expiration_date: '12/7')
+      invoice_3b.transactions.create!(result: 'success', credit_card_number: '12345', credit_card_expiration_date: '12/7')
+      invoice_3a.invoice_items.create!(item: item_3a, quantity: 125, unit_price: 10)
+      invoice_3b.invoice_items.create!(item: item_3b, quantity: 125, unit_price: 1)
+
+      # 650 items sold for merchant_3
+      invoice_4a = customer.invoices.create!(status: 'shipped', merchant: merchant_3)
+      invoice_4b = customer.invoices.create!(status: 'shipped', merchant: merchant_3)
+      invoice_4a.transactions.create!(result: 'success', credit_card_number: '12345', credit_card_expiration_date: '12/7')
+      invoice_4b.transactions.create!(result: 'success', credit_card_number: '12345', credit_card_expiration_date: '12/7')
+      invoice_4a.invoice_items.create!(item: item_4a, quantity: 500, unit_price: 1)
+      invoice_4b.invoice_items.create!(item: item_4b, quantity: 150, unit_price: 1)
+
+      # 500 items sold for merchant_4
+      invoice_5a = customer.invoices.create!(status: 'shipped', merchant: merchant_4)
+      invoice_5b = customer.invoices.create!(status: 'shipped', merchant: merchant_4)
+      invoice_5a.transactions.create!(result: 'success', credit_card_number: '12345', credit_card_expiration_date: '12/7')
+      invoice_5b.transactions.create!(result: 'success', credit_card_number: '12345', credit_card_expiration_date: '12/7')
+      invoice_5a.invoice_items.create!(item: item_5a, quantity: 300, unit_price: 1)
+      invoice_5b.invoice_items.create!(item: item_5b, quantity: 200, unit_price: 5)
+
+      quantity_params = ({
+                      quantity: 3,
+                    })
+      headers = {"CONTENT_TYPE" => "application/json"}
+      get "/api/v1/merchants/most_items", headers: headers, params: quantity_params
+
+      expect(response).to be_successful
+      expect(response.status).to eq(200)
+      expect(response.server_error?).to eq(false)
+
+      top_3_merchants = JSON.parse(response.body, symbolize_names: true)
+
+      expect(top_3_merchants).to have_key(:data)
+      expect(top_3_merchants[:data].count).to eq(3)
+      expect(top_3_merchants[:data]).to be_an(Array)
+
+      top_3_merchants[:data].each do |merchant|
+        expect(merchant).to have_key(:id)
+        expect(merchant[:id]).to be_an(String)
+        expect(merchant[:attributes]).to be_a(Hash)
+
+        expect(merchant).to have_key(:type)
+        expect(merchant[:type]).to eq("merchant_sold_item")
+
+        expect(merchant[:attributes]).to have_key(:name)
+        expect(merchant[:attributes][:name]).to be_a(String)
+
+        expect(merchant[:attributes]).to have_key(:count)
+        expect(merchant[:attributes][:count]).to be_an(Integer)
+      end
+
+      # returns the top 5 merchants in order of their total items sold.
+      # Doesn't include merchant_1 as they didn't make the top 5 cut.
+      expect(top_3_merchants[:data].first[:attributes][:name]).to eq(merchant_3.name)
+      expect(top_3_merchants[:data].second[:attributes][:name]).to eq(merchant_4.name)
+      expect(top_3_merchants[:data].third[:attributes][:name]).to eq(merchant_2.name)
+    end
+
+    it "returns 404 error when missing quantity param" do
+      get "/api/v1/merchants/most_items"
+      expect(response.successful?).to eq(false)
+      expect(response.status).to eq(400)
+      expect(response.server_error?).to eq(false)
+    end
+  end
 end
