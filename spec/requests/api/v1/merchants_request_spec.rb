@@ -380,8 +380,8 @@ describe "merchants requests" do
         expect(merchant[:attributes][:count]).to be_an(Integer)
       end
 
-      # returns the top 5 merchants in order of their total items sold.
-      # Doesn't include merchant_1 as they didn't make the top 5 cut.
+      # returns the top 3 merchants in order of their total items sold.
+      # Doesn't include merchant_1 as they didn't make the top 3 cut.
       expect(top_3_merchants[:data].first[:attributes][:name]).to eq(merchant_3.name)
       expect(top_3_merchants[:data].second[:attributes][:name]).to eq(merchant_4.name)
       expect(top_3_merchants[:data].third[:attributes][:name]).to eq(merchant_2.name)
