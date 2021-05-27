@@ -143,33 +143,31 @@ describe "items requests" do
     expect{Item.find(created_item.id)}.to raise_error(ActiveRecord::RecordNotFound)
   end
 
-  describe 'item update' do
-    it "can update an existing item" do
-      id = create(:item).id
-      previous_name = Item.last.name
-      item_params = { name: "Spider Man" }
-      headers = {"CONTENT_TYPE" => "application/json"}
+  it "can update an existing item" do
+    id = create(:item).id
+    previous_name = Item.last.name
+    item_params = { name: "Spider Man" }
+    headers = {"CONTENT_TYPE" => "application/json"}
 
-      put "/api/v1/items/#{id}", headers: headers, params: JSON.generate({item: item_params})
-      item = Item.find_by(id: id)
+    put "/api/v1/items/#{id}", headers: headers, params: JSON.generate({item: item_params})
+    item = Item.find_by(id: id)
 
-      expect(response).to be_successful
-      expect(item.name).to_not eq(previous_name)
-      expect(item.name).to eq("Spider Man")
-    end
+    expect(response).to be_successful
+    expect(item.name).to_not eq(previous_name)
+    expect(item.name).to eq("Spider Man")
+  end
 
-    it "attempts to update item with invalid merchant id" do
-      id = create(:item).id
-      previous_name = Item.last.name
-      item_params = { name: "Spider Man", merchant_id: 25 }
-      headers = {"CONTENT_TYPE" => "application/json"}
+  it "attempts to update item with invalid merchant id" do
+    id = create(:item).id
+    previous_name = Item.last.name
+    item_params = { name: "Spider Man", merchant_id: 25 }
+    headers = {"CONTENT_TYPE" => "application/json"}
 
-      put "/api/v1/items/#{id}", headers: headers, params: JSON.generate({item: item_params})
-      item = Item.find_by(id: id)
+    put "/api/v1/items/#{id}", headers: headers, params: JSON.generate({item: item_params})
+    item = Item.find_by(id: id)
 
-      expect(response.status).to eq(404)
-      expect(item.name).to eq(previous_name)
-    end
+    expect(response.status).to eq(404)
+    expect(item.name).to eq(previous_name)
   end
 
   it "returns a single item's merchant by their id" do
