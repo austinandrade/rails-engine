@@ -1,20 +1,31 @@
 class Api::V1::SearchController < ApplicationController
   def find_merchant
-    merchant =
+    if params[:name] && params[:name].present?
+      merchant =
       Merchant.where('name Ilike ?', "%#{params[:name]}%")
-              .order('LOWER(name)')
-              .first
-    if merchant.present?
-      render json: MerchantSerializer.new(merchant)
+      .order('LOWER(name)')
+      .first
+
+      if merchant
+        render json: MerchantSerializer.new(merchant)
+      else
+        blank_merchant = Merchant.create
+        render json: MerchantSerializer.new(blank_merchant), status: 400
+      end
     else
-      blank_merchant = Merchant.create
-      render json: MerchantSerializer.new(blank_merchant)
+      render json: { error: 'Please include name param' }.to_json, status: 400
     end
   end
 
   def find_items
-    items = Item.where('name Ilike ?', "%#{params[:name]}%")
-                .order('LOWER(name)')
-    render json: ItemSerializer.new(items)
+    if params[:name] && params[:name].present?
+      items = Item.where('name Ilike ?', "%#{params[:name]}%")
+                  .order('LOWER(name)')
+      if items
+        render json: ItemSerializer.new(items)
+      end
+    else
+      render json: { error: 'Please include name param' }.to_json, status: 400
+    end
   end
 end

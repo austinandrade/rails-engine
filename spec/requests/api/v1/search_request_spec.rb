@@ -7,6 +7,7 @@ describe "search requests" do
       merchant_2    = create(:merchant, name: 'Albert')
       merchant_3    = create(:merchant, name: 'during')
 
+
       search_params = ({
                       name: 'UrInG',
                       })
@@ -45,8 +46,8 @@ describe "search requests" do
 
       found_merchant = JSON.parse(response.body, symbolize_names: true)
 
-      expect(response).to be_successful
-      expect(response.status).to eq(200)
+      expect(response.successful?).to eq(false)
+      expect(response.status).to eq(400)
       expect(response.error?).to eq(false)
 
       expect(found_merchant).to have_key(:data)
@@ -64,10 +65,19 @@ describe "search requests" do
       expect(found_merchant[:data][:attributes]).to have_key(:name)
       expect(found_merchant[:data][:attributes][:name]).to eq(nil)
     end
+
+    it "returns 400 status if no name param is passed" do
+      get '/api/v1/merchants/find'
+
+      error = JSON.parse(response.body, symbolize_names: true)[:error]
+      expect(error).to eq("Please include name param")
+      expect(response.successful?).to eq(false)
+      expect(response.status).to eq(400)
+    end
   end
 
   describe 'all qualifying items search' do
-    it "returns all items that qualify when searching with partial name fragment" do
+    it "successfully returns all items that qualify when searching with partial name fragment" do
       item_1    = create(:item, name: 'kurt')
       item_2    = create(:item, name: 'Albert')
       item_3    = create(:item, name: 'thomas')
@@ -116,6 +126,15 @@ describe "search requests" do
       expect(found_items).to have_key(:data)
       expect(found_items[:data]).to be_an(Array)
       expect(found_items[:data].empty?).to be(true)
+    end
+
+    it "returns 400 status if no name param is passed" do
+      get '/api/v1/items/find_all'
+
+      error = JSON.parse(response.body, symbolize_names: true)[:error]
+      expect(error).to eq("Please include name param")
+      expect(response.successful?).to eq(false)
+      expect(response.status).to eq(400)
     end
   end
 end
