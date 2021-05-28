@@ -23,9 +23,6 @@ class Api::V1::SearchController < ApplicationController
                   .order('LOWER(name)')
       if items
         render json: ItemSerializer.new(items)
-      else
-        blank_item = Item.create
-        render json: ItemSerializer.new(blank_item), status: 400
       end
     else
       render json: { error: 'Please include name param' }.to_json, status: 400
