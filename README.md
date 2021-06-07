@@ -83,7 +83,7 @@ Rails Engine is an api that grants the ability to CRUD data within a database vi
   
   
 <!-- USAGE EXAMPLES -->
-## Learning Goals
+## Accomplishments
 
 - Learn how to expose an API
 - Use serializers to format JSON responses
