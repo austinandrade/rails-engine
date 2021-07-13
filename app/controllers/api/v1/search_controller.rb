@@ -14,7 +14,7 @@ class Api::V1::SearchController < ApplicationController
   def find_items
     if params[:name]&.present?
       items = Item.find_match_by_name(params[:name])
-      render json: ItemSerializer.new(items) if items
+      render json: ItemSerializer.new(items)
     else
       render json: { error: 'Please include name param' }.to_json, status: :bad_request
     end
