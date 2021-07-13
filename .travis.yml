@@ -7,8 +7,6 @@ addons:
 env:
   - RAILS_ENV=test
 script:
-- gem install bundler --conservative
-- bundle install --frozen
 - bundle exec rails db:create db:schema:load db:test:prepare
 - bundle exec rspec
 on:
