@@ -9,6 +9,11 @@ class Item < ApplicationRecord
   has_many :invoices, through: :invoice_items
   has_many :transactions, through: :invoices
 
+  scope :find_match_by_name, ->(name) do
+    where('name Ilike ?', "%#{name}%")
+      .order('LOWER(name)')
+  end
+
   def self.top_items_by_revenue(quantity)
     joins(invoices: :transactions)
     .where('transactions.result = ?', 'success')
