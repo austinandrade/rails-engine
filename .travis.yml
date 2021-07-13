@@ -3,10 +3,13 @@ rbenv:
 - 2.5.3
 addons:
   postgresql: 9.6
+
+env:
+  - RAILS_ENV=test
 script:
 - gem install bundler:2.1.4
-- bundle exec rails db:{create,migrate} RAILS_ENV=test
-- bundle exec rails db:schema:dump RAILS_ENV=test
+- bin/rails db:create
+- bin/rails db:migrate
 - bundle exec rspec
 on:
   repo: austin/rails-engine
