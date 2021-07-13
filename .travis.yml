@@ -7,9 +7,10 @@ addons:
 env:
   - RAILS_ENV=test
 script:
-- gem install bundler:2.1.4
-- bin/rails db:create
-- bin/rails db:migrate
+- gem install bundler --conservative
+- bundle install --frozen
+- bundle exec rails db:create
+- bundle exec rails db:migrate
 - bundle exec rspec
 on:
   repo: austin/rails-engine
