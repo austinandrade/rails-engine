@@ -9,8 +9,7 @@ env:
 script:
 - gem install bundler --conservative
 - bundle install --frozen
-- bundle exec rails db:create
-- bundle exec rails db:migrate
+- bundle exec rails db:create db:schema:load db:test:prepare
 - bundle exec rspec
 on:
   repo: austin/rails-engine
