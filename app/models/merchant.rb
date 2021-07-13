@@ -6,6 +6,13 @@ class Merchant < ApplicationRecord
   has_many :items, dependent: :destroy
   has_many :invoice_items, through: :items
 
+  scope :find_match_by_name, ->(name) do
+    where('name Ilike ?', "%#{name}%")
+      .order('LOWER(name)')
+    # Order should either be ascending or descending
+    # eg.order(:asc) or .order(:desc)
+  end
+
   class << self
     def top_merchants_by_revenue(quantity)
       joins(invoices: [:invoice_items, :transactions])
